@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1,
+        h2 {
+            color: #4CAF50;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Assignment 5</h1>
+    <h2>Code:</h2>
+    <pre>
+        public class KnightsTour {
+
+            // Size of the chessboard
+            private static final int N = 8;
+            
+            // Possible moves of the knight (8 directions)
+            private static final int[] moveX = {2, 2, -2, -2, 1, 1, -1, -1};
+            private static final int[] moveY = {1, -1, 1, -1, 2, -2, 2, -2};
+        
+            // Function to check if a position is valid on the board
+            private static boolean isValid(int x, int y, int[][] board) {
+                return (x >= 0 && y >= 0 && x < N && y < N && board[x][y] == -1);
+            }
+        
+            // Function to print the board
+            private static void printBoard(int[][] board) {
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        System.out.print(board[i][j] + " ");
+                    }
+                    System.out.println();
+                }
+            }
+        
+            // Recursive function to solve the Knight's Tour problem
+            private static boolean solveKT(int x, int y, int moveCount, int[][] board) {
+                // If all squares are visited, return true
+                if (moveCount == N * N) {
+                    return true;
+                }
+        
+                // Try all possible moves of the knight
+                for (int i = 0; i < 8; i++) {
+                    int newX = x + moveX[i];
+                    int newY = y + moveY[i];
+        
+                    if (isValid(newX, newY, board)) {
+                        // Mark the current move
+                        board[newX][newY] = moveCount;
+        
+                        // Recur to continue the tour
+                        if (solveKT(newX, newY, moveCount + 1, board)) {
+                            return true;
+                        }
+        
+                        // Backtrack
+                        board[newX][newY] = -1;
+                    }
+                }
+        
+                return false; // If no move is possible, return false
+            }
+        
+            // Function to initiate the Knight's Tour from a given starting point
+            public static void knightTour(int startX, int startY) {
+                int[][] board = new int[N][N];
+        
+                // Initialize the board with -1 (indicating unvisited squares)
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        board[i][j] = -1;
+                    }
+                }
+        
+                // Set the starting position of the knight
+                board[startX][startY] = 0;
+        
+                // Start the recursive knight tour
+                if (solveKT(startX, startY, 1, board)) {
+                    printBoard(board);
+                } else {
+                    System.out.println("Solution does not exist.");
+                }
+            }
+        
+            public static void main(String[] args) {
+                // Start the Knight's tour from position (0, 0)
+                knightTour(0, 0);
+            }
+        }
+        
+    </pre>
+    <h2>Explanation:</h2>
+    <p>
+        The Knight's Tour problem is a classical backtracking problem. The goal is to move a knight on a chessboard of
+        size
+        𝑁
+        ×
+        𝑁
+        N×N such that the knight visits every square exactly once. The knight moves in an "L" shape: two squares in one
+        direction (horizontal or vertical) and one square in the other direction.
+
+        To solve this problem, we can use backtracking. We try to make a move to an unvisited square and recursively
+        attempt to visit all the remaining squares. If we reach a point where no further valid moves are possible, we
+        backtrack and undo the previous move.
+
+        Steps to Solve the Knight's Tour Problem
+        Representation:
+
+        The board is represented as an
+        𝑁
+        ×
+        𝑁
+        N×N grid where each square is either visited or not.
+        Valid Moves:
+
+        The knight can move to 8 possible positions from any square, so the moves can be represented as a list of pairs:
+        css
+        Copy code
+        moves = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]
+        These moves correspond to the knight's ability to move in an "L" shape.
+        Backtracking:
+
+        Start from the given position and try moving the knight to all possible valid positions.
+        If the knight can visit all squares, record the number of jumps (moves) it took.
+        If the knight gets stuck, backtrack and try a different path.
+        Base Case:
+
+        If all squares are visited, print the number of moves and return true.
+        Recursive Case:
+
+        For each move, recursively try to visit the next square. If a valid path exists, return true.
+        If no valid moves remain, backtrack to the previous position.
+        <br>
+        <br>
+        Explanation of the Code
+        Constants:
+
+        N defines the size of the chessboard (8x8 for a standard chessboard).
+        moveX and moveY arrays define the 8 possible knight moves (relative to the current position).
+        isValid():
+
+        Checks if the knight's move is within the bounds of the chessboard and if the destination square has not been
+        visited yet.
+        printBoard():
+
+        Prints the current board, where each cell contains the move number at which the knight visited that cell.
+        solveKT():
+
+        This is the core recursive function. It starts at the given position (x, y) and tries all possible moves in
+        sequence. If a valid move is found, it makes the move and recursively tries to solve the rest of the board.
+        If all squares are visited (base case), the function returns true. If no valid move is found, it backtracks by
+        resetting the cell to -1 and trying the next possible move.
+        knightTour():
+
+        This function initializes the board and begins the knight's tour starting from a given position (startX,
+        startY).
+        Main:
+
+        The knightTour(0, 0) function call starts the knight's tour from the top-left corner of the chessboard (position
+        (0, 0)).
+    </p>
+    <a href="index.html">Back to Home</a>
+</body>
+
+</html>

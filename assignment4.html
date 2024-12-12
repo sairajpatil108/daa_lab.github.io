@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1,
+        h2 {
+            color: #4CAF50;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Assignment 4</h1>
+    <h2>Code:</h2>
+    <pre>
+        import java.util.*;
+
+        public class NetworkDelayTime {
+        
+            // Dijkstra's Algorithm Implementation
+            public static int networkDelayTime(int[][] times, int n, int k) {
+                // Create adjacency list for the graph
+                Map<Integer, List<int[]>> graph = new HashMap<>();
+                for (int[] edge : times) {
+                    graph.computeIfAbsent(edge[0], v -> new ArrayList<>()).add(new int[]{edge[1], edge[2]});
+                }
+        
+                // Min-heap to store [currentDistance, node]
+                PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+                pq.add(new int[]{0, k}); // Start with the source node
+        
+                // Distance array to track shortest distances to each node
+                int[] dist = new int[n + 1];
+                Arrays.fill(dist, Integer.MAX_VALUE);
+                dist[k] = 0;
+        
+                // Process the nodes
+                while (!pq.isEmpty()) {
+                    int[] current = pq.poll();
+                    int time = current[0];
+                    int node = current[1];
+        
+                    if (time > dist[node]) continue; // Skip outdated distances
+        
+                    // Explore neighbors
+                    if (graph.containsKey(node)) {
+                        for (int[] neighbor : graph.get(node)) {
+                            int nextNode = neighbor[0];
+                            int travelTime = neighbor[1];
+                            if (dist[node] + travelTime < dist[nextNode]) {
+                                dist[nextNode] = dist[node] + travelTime;
+                                pq.add(new int[]{dist[nextNode], nextNode});
+                            }
+                        }
+                    }
+                }
+        
+                // Find the maximum distance
+                int maxTime = 0;
+                for (int i = 1; i <= n; i++) {
+                    if (dist[i] == Integer.MAX_VALUE) return -1; // If any node is unreachable
+                    maxTime = Math.max(maxTime, dist[i]);
+                }
+        
+                return maxTime;
+            }
+        
+            public static void main(String[] args) {
+                // Example: edges (ui, vi, wi)
+                int[][] times = {
+                    {2, 1, 1},
+                    {2, 3, 1},
+                    {3, 4, 1}
+                };
+                int n = 4; // Number of nodes
+                int k = 2; // Starting node
+        
+                int result = networkDelayTime(times, n, k);
+                System.out.println("Network Delay Time: " + result);
+            }
+        }
+        
+            }
+        }
+        
+    </pre>
+    <h2>Explanation:</h2>
+    <p>
+        Explanation of the Approach
+        Graph Representation:
+
+        The graph is represented using an adjacency list where each node points to its neighbors and the time to reach
+        them.
+        Priority Queue:
+
+        A min-heap (priority queue) is used to process nodes in the order of their shortest known distance from the
+        source.
+        Algorithm:
+
+        Initialize the distances to all nodes as infinity (INF) except the source node K, which is set to 0.
+        Extract the node with the smallest distance from the priority queue.
+        Update the distances of its neighbors if a shorter path is found through the current node.
+        Repeat until all reachable nodes are processed.
+        Output:
+
+        If all nodes are reachable, return the maximum distance from K to any node. Otherwise, return -1.
+        <br>
+        <br>
+        Explanation of the Code
+        Graph Construction:
+
+        The graph is represented as a map of adjacency lists. Each node maps to a list of its neighbors along with the
+        time to reach them.
+        Priority Queue:
+
+        The min-heap ensures that the next node to be processed is the one with the smallest known distance from the
+        source.
+        Distance Updates:
+
+        If a shorter path to a neighboring node is found, update the distance and add the neighbor to the priority
+        queue.
+        Output:
+
+        After processing all nodes, the maximum distance in the dist array is the time it takes for the signal to reach
+        all nodes.
+        If any node is unreachable (dist[i] == INF), return -1.
+    </p>
+    <a href="index.html">Back to Home</a>
+</body>
+
+</html>

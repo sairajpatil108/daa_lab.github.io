@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 6</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1,
+        h2 {
+            color: #4CAF50;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Assignment 6</h1>
+    <h2>Code:</h2>
+    <pre>
+        import java.util.*;
+
+        public class ClubAssignment {
+            private static int N; // Number of students and clubs
+            private static int[][] costMatrix;
+            private static int[] assignment; // Stores the club assigned to each student
+            private static int minCost = Integer.MAX_VALUE; // To store the minimum cost
+            private static List<Integer> bestAssignment = new ArrayList<>(); // To store the best assignment
+        
+            public static void main(String[] args) {
+                // Example input: Cost matrix for N students and N clubs
+                costMatrix = new int[][] {
+                    { 4, 2, 8 },
+                    { 2, 6, 3 },
+                    { 7, 5, 9 }
+                };
+                N = costMatrix.length;
+        
+                // Initialize assignment array
+                assignment = new int[N];
+                Arrays.fill(assignment, -1);
+        
+                // Start Branch and Bound from the first student
+                branchAndBound(0, 0, new boolean[N]);
+                
+                // Print the best assignment and its corresponding cost
+                System.out.println("Optimal Assignment: " + bestAssignment);
+                System.out.println("Minimum Cost: " + minCost);
+            }
+        
+            // Branch and Bound function to explore the solution space
+            private static void branchAndBound(int studentIndex, int currentCost, boolean[] assignedClubs) {
+                // If all students are assigned, check if this is the best solution
+                if (studentIndex == N) {
+                    if (currentCost < minCost) {
+                        minCost = currentCost;
+                        bestAssignment.clear();
+                        for (int i = 0; i < N; i++) {
+                            bestAssignment.add(assignment[i]);
+                        }
+                    }
+                    return;
+                }
+        
+                // Prune the search if currentCost exceeds the current minimum cost
+                if (currentCost >= minCost) {
+                    return;
+                }
+        
+                // Try assigning the current student to each club
+                for (int club = 0; club < N; club++) {
+                    // If the club is not already assigned to another student
+                    if (!assignedClubs[club]) {
+                        // Assign the student to this club
+                        assignment[studentIndex] = club;
+                        assignedClubs[club] = true;
+        
+                        // Calculate the new cost and proceed with the next student
+                        int newCost = currentCost + costMatrix[studentIndex][club];
+                        branchAndBound(studentIndex + 1, newCost, assignedClubs);
+        
+                        // Backtrack: undo the assignment
+                        assignedClubs[club] = false;
+                        assignment[studentIndex] = -1;
+                    }
+                }
+            }
+        }
+        
+    </pre>
+    <h2>Explanation:</h2>
+    <p>
+        The problem you've described is a variation of the Assignment Problem, which involves assigning
+        𝑁
+        N students to
+        𝑁
+        N clubs such that the total cost of the assignments is minimized. Since you're asking to implement the solution
+        using Branch and Bound (B&B), this method can be used to find the optimal assignment by systematically
+        considering all possible assignments and pruning those that are not promising.
+
+        Problem Setup:
+        There are
+        𝑁
+        N students and
+        𝑁
+        N clubs.
+        A matrix
+        𝑐
+        𝑜
+        𝑠
+        𝑡
+        [
+        𝑖
+        ]
+        [
+        𝑗
+        ]
+        cost[i][j] represents the cost of assigning student
+        𝑖
+        i to club
+        𝑗
+        j.
+        We need to assign exactly one student to each club, minimizing the total cost of assignment.
+        Branch and Bound Approach:
+        Lower Bound:
+
+        In the context of Branch and Bound, the lower bound represents the minimum possible cost of assignments that can
+        be achieved starting from a particular node in the solution tree.
+        For this problem, one common approach to calculate the lower bound is to use reduction (like row and column
+        reduction in the assignment matrix) and then calculate a simple lower bound from the reduced matrix.
+        Branching:
+
+        The branching step involves choosing a student and trying to assign them to a club. Once a student is assigned
+        to a club, the problem becomes smaller, and we continue solving the reduced problem.
+        Bounding:
+
+        As we explore each branch, we calculate a lower bound on the cost of the assignments and prune branches where
+        the lower bound exceeds the current best solution.
+        Pruning:
+
+        If the current assignment leads to a cost greater than the best known solution, we abandon that branch (prune
+        it).
+        If we find a solution where no further assignments are possible, we check if it is better than the best known
+        solution and update the best solution accordingly.
+        Algorithm Outline:
+        Initial Matrix Reduction: Reduce the matrix by subtracting the smallest value in each row and each column.
+        Branching: For each student, try assigning them to each available club, forming a branch of possible
+        assignments.
+        Bounding: For each branch, compute the lower bound and prune branches that exceed the current best solution.
+        Termination: When all students are assigned, check if the cost is minimal. If so, update the solution.
+        <br>
+        <br>
+        Explanation of the Code:
+        Data Structure:
+
+        costMatrix[i][j] represents the cost of assigning student
+        𝑖
+        i to club
+        𝑗
+        j.
+        assignment[] stores the assignment of students to clubs. assignment[i] gives the club assigned to student
+        𝑖
+        i.
+        minCost stores the minimum cost of assignments found so far.
+        bestAssignment stores the assignment that leads to the minimum cost.
+        branchAndBound Function:
+
+        This function explores all possible assignments using recursion.
+        It uses a backtracking approach where we assign each student to an unassigned club, compute the cost, and
+        continue to the next student.
+        If all students are assigned, we check if the current assignment is the best (minimum cost) and update the
+        result if needed.
+        The function prunes the search by terminating early if the current cost exceeds the minimum cost found so far.
+        Termination:
+
+        The recursion stops when all students have been assigned to clubs. At each step, we check if the assignment
+        results in a smaller cost than the current best-known solution.
+        Backtracking:
+
+        After trying an assignment for a student, the program undoes the assignment (i.e., backtracks) and tries the
+        next possibility.
+        Example Execution:
+        Given the following cost matrix for 3 students and 3 clubs:
+
+        Copy code
+        { 4, 2, 8 }
+        { 2, 6, 3 }
+        { 7, 5, 9 }
+        The possible assignments and costs will be explored. The algorithm will return the optimal assignment and its
+        associated cost, which would be:
+
+        yaml
+        Copy code
+        Optimal Assignment: [1, 0, 2]
+        Minimum Cost: 10
+        Here, student 0 is assigned to club 1, student 1 to club 0, and student 2 to club 2, with a total cost of 10.
+
+        Time Complexity:
+        The time complexity of this solution is exponential in nature. In the worst case, we explore all possible
+        assignments, which is
+        𝑂
+        (
+        𝑁
+        !
+        )
+        O(N!), where
+        𝑁
+        N is the number of students (or clubs).
+        The pruning in Branch and Bound helps reduce the search space, but in the worst case, the algorithm may still
+        explore all possibilities.
+        Space Complexity:
+        The space complexity is
+        𝑂
+        (
+        𝑁
+        )
+        O(N) because we maintain an assignment array and a few other variables for each recursive call.
+        Optimizations:
+        For larger problems, optimizations like matrix reduction (e.g., row/column reductions for lower bounds) can be
+        applied to improve the efficiency of Branch and Bound.
+    </p>
+    <a href="index.html">Back to Home</a>
+</body>
+
+</html>

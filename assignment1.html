@@ -46,19 +46,217 @@
     <h1>Assignment 1</h1>
     <h2>Code:</h2>
     <pre>
-&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;title&gt;Hello World&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Hello, World!&lt;/h1&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+        import java.math.BigInteger;
+
+        public class LargeNumberSquare {
+        
+            // Function to calculate the square using divide and conquer (Karatsuba)
+            public static BigInteger square(BigInteger num) {
+                if (num.compareTo(BigInteger.TEN) < 0) {
+                    return num.multiply(num); // Base case: Single-digit numbers
+                }
+        
+                // Convert number to string and divide into halves
+                String numStr = num.toString();
+                int len = numStr.length();
+                int mid = len / 2;
+        
+                // Split into high and low parts
+                BigInteger high = new BigInteger(numStr.substring(0, mid));
+                BigInteger low = new BigInteger(numStr.substring(mid));
+        
+                // Recursive squares
+                BigInteger z0 = square(low);                          // Square of low part
+                BigInteger z1 = square(high.add(low));                // Cross terms
+                BigInteger z2 = square(high);                         // Square of high part
+        
+                // Combine the results using (z2 * 10^(2*mid)) + ((z1 - z2 - z0) * 10^mid) + z0
+                BigInteger powerMid = BigInteger.TEN.pow(mid);
+                BigInteger power2Mid = BigInteger.TEN.pow(2 * mid);
+        
+                return z2.multiply(power2Mid)
+                         .add(z1.subtract(z2).subtract(z0).multiply(powerMid))
+                         .add(z0);
+            }
+        
+            public static void main(String[] args) {
+                // 20-digit number
+                BigInteger largeNumber = new BigInteger("12345678901234567890");
+        
+                // Compute square
+                BigInteger result = square(largeNumber);
+        
+                // Print result
+                System.out.println("Square of " + largeNumber + " is:");
+                System.out.println(result);
+            }
+        }
+        
     </pre>
     <h2>Explanation:</h2>
-    <p>This is a basic HTML page that displays "Hello, World!" in a header. It uses the &lt;h1&gt; tag for the main
-        heading.</p>
+    <p>Divide and Conquer Concept:
+
+        The input number is divided into two halves, high and low.
+        For a number
+        𝑋
+        X, where
+        𝑋
+        =
+        1
+        0
+        𝑚
+        𝑖
+        𝑑
+        ⋅
+        ℎ
+        𝑖
+        𝑔
+        ℎ
+        +
+        𝑙
+        𝑜
+        𝑤
+        X=10
+        mid
+        ⋅high+low, the square is calculated as:
+        𝑋
+        2
+        =
+        (
+        ℎ
+        𝑖
+        𝑔
+        ℎ
+        ⋅
+        1
+        0
+        𝑚
+        𝑖
+        𝑑
+        +
+        𝑙
+        𝑜
+        𝑤
+        )
+        2
+        X
+        2
+        =(high⋅10
+        mid
+        +low)
+        2
+
+        Expanding this, we get:
+        𝑋
+        2
+        =
+        ℎ
+        𝑖
+        𝑔
+        ℎ
+        2
+        ⋅
+        1
+        0
+        2
+        ⋅
+        𝑚
+        𝑖
+        𝑑
+        +
+        2
+        ⋅
+        ℎ
+        𝑖
+        𝑔
+        ℎ
+        ⋅
+        𝑙
+        𝑜
+        𝑤
+        ⋅
+        1
+        0
+        𝑚
+        𝑖
+        𝑑
+        +
+        𝑙
+        𝑜
+        𝑤
+        2
+        X
+        2
+        =high
+        2
+        ⋅10
+        2⋅mid
+        +2⋅high⋅low⋅10
+        mid
+        +low
+        2
+
+        Recursive Calculations:
+
+        We compute the squares
+        𝑧
+        2
+        =
+        ℎ
+        𝑖
+        𝑔
+        ℎ
+        2
+        z2=high
+        2
+        ,
+        𝑧
+        0
+        =
+        𝑙
+        𝑜
+        𝑤
+        2
+        z0=low
+        2
+        , and the cross term
+        𝑧
+        1
+        =
+        (
+        ℎ
+        𝑖
+        𝑔
+        ℎ
+        +
+        𝑙
+        𝑜
+        𝑤
+        )
+        2
+        −
+        𝑧
+        2
+        −
+        𝑧
+        0
+        z1=(high+low)
+        2
+        −z2−z0 using recursive calls.
+        Combining Results:
+
+        The results of the three calculations are combined to reconstruct the final square, with appropriate powers of
+        10 applied to align the terms.
+        Efficiency:
+
+        The Karatsuba algorithm uses three multiplications for
+        𝑛
+        /
+        2
+        n/2-digit numbers instead of four as in traditional multiplication, reducing the time complexity.
+        Base Case:
+
+        For single-digit numbers, the square is computed directly.</p>
     <a href="index.html">Back to Home</a>
 </body>
 

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1,
+        h2 {
+            color: #4CAF50;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Assignment 2</h1>
+    <h2>Code:</h2>
+    <pre>
+        import java.util.Arrays;
+import java.util.Comparator;
+
+class Job {
+    int id;       // Job ID
+    int profit;   // Profit of the job
+    int deadline; // Deadline of the job
+
+    public Job(int id, int profit, int deadline) {
+        this.id = id;
+        this.profit = profit;
+        this.deadline = deadline;
+    }
+}
+
+public class JobScheduling {
+
+    public static int[] jobScheduling(Job[] jobs, int n) {
+        // Sort jobs in descending order of profit
+        Arrays.sort(jobs, Comparator.comparingInt((Job job) -> job.profit).reversed());
+
+        // Maximum deadline determines the size of the timeline
+        int maxDeadline = Arrays.stream(jobs).mapToInt(job -> job.deadline).max().orElse(0);
+        boolean[] timeSlot = new boolean[maxDeadline]; // Keep track of occupied slots
+        int[] jobSequence = new int[maxDeadline];      // To store the job sequence
+        Arrays.fill(jobSequence, -1);
+
+        int totalProfit = 0;
+
+        // Schedule jobs
+        for (Job job : jobs) {
+            // Try to place the job in the latest available slot before its deadline
+            for (int t = Math.min(job.deadline, maxDeadline) - 1; t >= 0; t--) {
+                if (!timeSlot[t]) { // If the slot is free
+                    timeSlot[t] = true;
+                    jobSequence[t] = job.id; // Assign the job to this slot
+                    totalProfit += job.profit;
+                    break;
+                }
+            }
+        }
+
+        System.out.println("Total Profit: " + totalProfit);
+        return jobSequence;
+    }
+
+    public static void main(String[] args) {
+        // Example jobs (id, profit, deadline)
+        Job[] jobs = {
+            new Job(1, 100, 2),
+            new Job(2, 19, 1),
+            new Job(3, 27, 2),
+            new Job(4, 25, 1),
+            new Job(5, 15, 3)
+        };
+
+        int[] schedule = jobScheduling(jobs, jobs.length);
+
+        // Print the scheduled jobs
+        System.out.print("Job Sequence: ");
+        for (int jobId : schedule) {
+            if (jobId != -1) {
+                System.out.print("Job" + jobId + " ");
+            }
+        }
+    }
+}
+
+        
+    </pre>
+    <h2>Explanation:</h2>
+    <p>Sorting by Profit:
+
+        Jobs are sorted in descending order of their profits so that high-profit tasks are considered first.
+        Time Slot Array:
+
+        timeSlot[] keeps track of which time slots are occupied, ensuring that no two jobs are scheduled at the same
+        time.
+        The size of this array is determined by the maximum deadline among the tasks.
+        Iterating Over Jobs:
+
+        For each job, find the latest available time slot before its deadline.
+        If a slot is available, assign the job to that slot, and add its profit to the total profit.
+        Output:
+
+        The jobSequence[] array stores the order of jobs scheduled.
+        The total profit is also displayed.
+        Example Input and Output
+        Input
+        Jobs with IDs, profits, and deadlines:
+
+        Job1: Profit = 100, Deadline = 2
+        Job2: Profit = 19, Deadline = 1
+        Job3: Profit = 27, Deadline = 2
+        Job4: Profit = 25, Deadline = 1
+        Job5: Profit = 15, Deadline = 3
+        Output
+        mathematica
+        Copy code
+        Total Profit: 142
+        Job Sequence: Job1 Job3 Job5
+        Time Complexity
+        Sorting:
+        𝑂
+        (
+        𝑛
+        log
+        ⁡
+        𝑛
+        )
+        O(nlogn), where
+        𝑛
+        n is the number of jobs.
+        Slot Assignment:
+        𝑂
+        (
+        𝑛
+        ⋅
+        𝑑
+        )
+        O(n⋅d), where
+        𝑑
+        d is the maximum deadline (in most cases
+        𝑑
+        ≤
+        𝑛
+        d≤n).
+        Overall complexity:
+        𝑂
+        (
+        𝑛
+        log
+        ⁡
+        𝑛
+        +
+        𝑛
+        2
+        )
+        O(nlogn+n
+        2
+        ) in the worst case.</p>
+    <a href="index.html">Back to Home</a>
+</body>
+
+</html>

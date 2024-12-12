@@ -1,0 +1,440 @@
+ assignment 1
+ --------------------------------------------------------------
+ import java.math.BigInteger;
+
+        public class LargeNumberSquare {
+        
+            // Function to calculate the square using divide and conquer (Karatsuba)
+            public static BigInteger square(BigInteger num) {
+                if (num.compareTo(BigInteger.TEN) < 0) {
+                    return num.multiply(num); // Base case: Single-digit numbers
+                }
+        
+                // Convert number to string and divide into halves
+                String numStr = num.toString();
+                int len = numStr.length();
+                int mid = len / 2;
+        
+                // Split into high and low parts
+                BigInteger high = new BigInteger(numStr.substring(0, mid));
+                BigInteger low = new BigInteger(numStr.substring(mid));
+        
+                // Recursive squares
+                BigInteger z0 = square(low);                          // Square of low part
+                BigInteger z1 = square(high.add(low));                // Cross terms
+                BigInteger z2 = square(high);                         // Square of high part
+        
+                // Combine the results using (z2 * 10^(2*mid)) + ((z1 - z2 - z0) * 10^mid) + z0
+                BigInteger powerMid = BigInteger.TEN.pow(mid);
+                BigInteger power2Mid = BigInteger.TEN.pow(2 * mid);
+        
+                return z2.multiply(power2Mid)
+                         .add(z1.subtract(z2).subtract(z0).multiply(powerMid))
+                         .add(z0);
+            }
+        
+            public static void main(String[] args) {
+                // 20-digit number
+                BigInteger largeNumber = new BigInteger("12345678901234567890");
+        
+                // Compute square
+                BigInteger result = square(largeNumber);
+        
+                // Print result
+                System.out.println("Square of " + largeNumber + " is:");
+                System.out.println(result);
+            }
+        }
+        
+    ==============================================================================
+
+
+
+     import java.util.Arrays;
+import java.util.Comparator;
+
+class Job {
+    int id;       // Job ID
+    int profit;   // Profit of the job
+    int deadline; // Deadline of the job
+
+    public Job(int id, int profit, int deadline) {
+        this.id = id;
+        this.profit = profit;
+        this.deadline = deadline;
+    }
+}
+
+public class JobScheduling {
+
+    public static int[] jobScheduling(Job[] jobs, int n) {
+        // Sort jobs in descending order of profit
+        Arrays.sort(jobs, Comparator.comparingInt((Job job) -> job.profit).reversed());
+
+        // Maximum deadline determines the size of the timeline
+        int maxDeadline = Arrays.stream(jobs).mapToInt(job -> job.deadline).max().orElse(0);
+        boolean[] timeSlot = new boolean[maxDeadline]; // Keep track of occupied slots
+        int[] jobSequence = new int[maxDeadline];      // To store the job sequence
+        Arrays.fill(jobSequence, -1);
+
+        int totalProfit = 0;
+
+        // Schedule jobs
+        for (Job job : jobs) {
+            // Try to place the job in the latest available slot before its deadline
+            for (int t = Math.min(job.deadline, maxDeadline) - 1; t >= 0; t--) {
+                if (!timeSlot[t]) { // If the slot is free
+                    timeSlot[t] = true;
+                    jobSequence[t] = job.id; // Assign the job to this slot
+                    totalProfit += job.profit;
+                    break;
+                }
+            }
+        }
+
+        System.out.println("Total Profit: " + totalProfit);
+        return jobSequence;
+    }
+
+    public static void main(String[] args) {
+        // Example jobs (id, profit, deadline)
+        Job[] jobs = {
+            new Job(1, 100, 2),
+            new Job(2, 19, 1),
+            new Job(3, 27, 2),
+            new Job(4, 25, 1),
+            new Job(5, 15, 3)
+        };
+
+        int[] schedule = jobScheduling(jobs, jobs.length);
+
+        // Print the scheduled jobs
+        System.out.print("Job Sequence: ");
+        for (int jobId : schedule) {
+            if (jobId != -1) {
+                System.out.print("Job" + jobId + " ");
+            }
+        }
+    }
+}
+
+
+
+=================================================================================================================
+
+
+import java.util.Arrays;
+
+public class FloydWarshall {
+
+    // Define a large value for infinity
+    final static int INF = 99999;
+
+    // Floyd-Warshall algorithm implementation
+    public static void floydWarshall(int[][] graph) {
+        int n = graph.length; // Number of cities
+        int[][] dist = new int[n][n];
+
+        // Initialize the solution matrix same as input graph matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = graph[i][j];
+            }
+        }
+
+        // Update the solution matrix with the shortest paths
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] != INF && dist[k][j] != INF) {
+                        dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                    }
+                }
+            }
+        }
+
+        // Print the shortest path matrix
+        printSolution(dist);
+    }
+
+    // Print the solution matrix
+    public static void printSolution(int[][] dist) {
+        int n = dist.length;
+        System.out.println("Shortest distances between every pair of cities:");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][j] == INF) {
+                    System.out.print("INF ");
+                } else {
+                    System.out.print(dist[i][j] + "   ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        // Input graph: adjacency matrix representation
+        // 0 represents no self-loop; INF represents no direct connection
+        int[][] graph = {
+            {0, 3, INF, INF, INF, INF},
+            {3, 0, 1, INF, INF, INF},
+            {INF, 1, 0, 7, INF, 2},
+            {INF, INF, 7, 0, 2, 3},
+            {INF, INF, INF, 2, 0, 4},
+            {INF, INF, 2, 3, 4, 0}
+        };
+
+        // Run Floyd-Warshall algorithm
+        floydWarshall(graph);
+    }
+}
+
+        
+
+
+
+
+
+=====================================================================================================       
+
+
+
+
+
+
+
+
+import java.util.*;
+
+        public class NetworkDelayTime {
+        
+            // Dijkstra's Algorithm Implementation
+            public static int networkDelayTime(int[][] times, int n, int k) {
+                // Create adjacency list for the graph
+                Map> graph = new HashMap<>();
+                for (int[] edge : times) {
+                    graph.computeIfAbsent(edge[0], v -> new ArrayList<>()).add(new int[]{edge[1], edge[2]});
+                }
+        
+                // Min-heap to store [currentDistance, node]
+                PriorityQueue pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+                pq.add(new int[]{0, k}); // Start with the source node
+        
+                // Distance array to track shortest distances to each node
+                int[] dist = new int[n + 1];
+                Arrays.fill(dist, Integer.MAX_VALUE);
+                dist[k] = 0;
+        
+                // Process the nodes
+                while (!pq.isEmpty()) {
+                    int[] current = pq.poll();
+                    int time = current[0];
+                    int node = current[1];
+        
+                    if (time > dist[node]) continue; // Skip outdated distances
+        
+                    // Explore neighbors
+                    if (graph.containsKey(node)) {
+                        for (int[] neighbor : graph.get(node)) {
+                            int nextNode = neighbor[0];
+                            int travelTime = neighbor[1];
+                            if (dist[node] + travelTime < dist[nextNode]) {
+                                dist[nextNode] = dist[node] + travelTime;
+                                pq.add(new int[]{dist[nextNode], nextNode});
+                            }
+                        }
+                    }
+                }
+        
+                // Find the maximum distance
+                int maxTime = 0;
+                for (int i = 1; i <= n; i++) {
+                    if (dist[i] == Integer.MAX_VALUE) return -1; // If any node is unreachable
+                    maxTime = Math.max(maxTime, dist[i]);
+                }
+        
+                return maxTime;
+            }
+        
+            public static void main(String[] args) {
+                // Example: edges (ui, vi, wi)
+                int[][] times = {
+                    {2, 1, 1},
+                    {2, 3, 1},
+                    {3, 4, 1}
+                };
+                int n = 4; // Number of nodes
+                int k = 2; // Starting node
+        
+                int result = networkDelayTime(times, n, k);
+                System.out.println("Network Delay Time: " + result);
+            }
+        }
+        
+            }
+        }
+        
+
+
+
+
+        ========================================================================================================
+
+
+
+           public class KnightsTour {
+
+            // Size of the chessboard
+            private static final int N = 8;
+            
+            // Possible moves of the knight (8 directions)
+            private static final int[] moveX = {2, 2, -2, -2, 1, 1, -1, -1};
+            private static final int[] moveY = {1, -1, 1, -1, 2, -2, 2, -2};
+        
+            // Function to check if a position is valid on the board
+            private static boolean isValid(int x, int y, int[][] board) {
+                return (x >= 0 && y >= 0 && x < N && y < N && board[x][y] == -1);
+            }
+        
+            // Function to print the board
+            private static void printBoard(int[][] board) {
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        System.out.print(board[i][j] + " ");
+                    }
+                    System.out.println();
+                }
+            }
+        
+            // Recursive function to solve the Knight's Tour problem
+            private static boolean solveKT(int x, int y, int moveCount, int[][] board) {
+                // If all squares are visited, return true
+                if (moveCount == N * N) {
+                    return true;
+                }
+        
+                // Try all possible moves of the knight
+                for (int i = 0; i < 8; i++) {
+                    int newX = x + moveX[i];
+                    int newY = y + moveY[i];
+        
+                    if (isValid(newX, newY, board)) {
+                        // Mark the current move
+                        board[newX][newY] = moveCount;
+        
+                        // Recur to continue the tour
+                        if (solveKT(newX, newY, moveCount + 1, board)) {
+                            return true;
+                        }
+        
+                        // Backtrack
+                        board[newX][newY] = -1;
+                    }
+                }
+        
+                return false; // If no move is possible, return false
+            }
+        
+            // Function to initiate the Knight's Tour from a given starting point
+            public static void knightTour(int startX, int startY) {
+                int[][] board = new int[N][N];
+        
+                // Initialize the board with -1 (indicating unvisited squares)
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        board[i][j] = -1;
+                    }
+                }
+        
+                // Set the starting position of the knight
+                board[startX][startY] = 0;
+        
+                // Start the recursive knight tour
+                if (solveKT(startX, startY, 1, board)) {
+                    printBoard(board);
+                } else {
+                    System.out.println("Solution does not exist.");
+                }
+            }
+        
+            public static void main(String[] args) {
+                // Start the Knight's tour from position (0, 0)
+                knightTour(0, 0);
+            }
+        }
+        
+    
+
+    ====================================================================================================================
+
+
+
+    import java.util.*;
+
+        public class ClubAssignment {
+            private static int N; // Number of students and clubs
+            private static int[][] costMatrix;
+            private static int[] assignment; // Stores the club assigned to each student
+            private static int minCost = Integer.MAX_VALUE; // To store the minimum cost
+            private static List bestAssignment = new ArrayList<>(); // To store the best assignment
+        
+            public static void main(String[] args) {
+                // Example input: Cost matrix for N students and N clubs
+                costMatrix = new int[][] {
+                    { 4, 2, 8 },
+                    { 2, 6, 3 },
+                    { 7, 5, 9 }
+                };
+                N = costMatrix.length;
+        
+                // Initialize assignment array
+                assignment = new int[N];
+                Arrays.fill(assignment, -1);
+        
+                // Start Branch and Bound from the first student
+                branchAndBound(0, 0, new boolean[N]);
+                
+                // Print the best assignment and its corresponding cost
+                System.out.println("Optimal Assignment: " + bestAssignment);
+                System.out.println("Minimum Cost: " + minCost);
+            }
+        
+            // Branch and Bound function to explore the solution space
+            private static void branchAndBound(int studentIndex, int currentCost, boolean[] assignedClubs) {
+                // If all students are assigned, check if this is the best solution
+                if (studentIndex == N) {
+                    if (currentCost < minCost) {
+                        minCost = currentCost;
+                        bestAssignment.clear();
+                        for (int i = 0; i < N; i++) {
+                            bestAssignment.add(assignment[i]);
+                        }
+                    }
+                    return;
+                }
+        
+                // Prune the search if currentCost exceeds the current minimum cost
+                if (currentCost >= minCost) {
+                    return;
+                }
+        
+                // Try assigning the current student to each club
+                for (int club = 0; club < N; club++) {
+                    // If the club is not already assigned to another student
+                    if (!assignedClubs[club]) {
+                        // Assign the student to this club
+                        assignment[studentIndex] = club;
+                        assignedClubs[club] = true;
+        
+                        // Calculate the new cost and proceed with the next student
+                        int newCost = currentCost + costMatrix[studentIndex][club];
+                        branchAndBound(studentIndex + 1, newCost, assignedClubs);
+        
+                        // Backtrack: undo the assignment
+                        assignedClubs[club] = false;
+                        assignment[studentIndex] = -1;
+                    }
+                }
+            }
+        }
