@@ -1,0 +1,143 @@
+
+import java.util.Arrays;
+
+public class test {
+
+    static final int INF = 99999; // Representation of infinity
+
+    public static void main(String[] args) {
+        // Adjacency matrix representing the cost between offices
+        int[][] graph = {
+            {0, 3, INF, 5},
+            {3, 0, 1, INF},
+            {INF, 1, 0, 2},
+            {5, INF, 2, 0}
+        };
+
+        int[][] result = floydWarshall(graph);
+
+        // Print the result
+        System.out.println("Minimum cost matrix:");
+        for (int[] row : result) {
+            System.out.println(Arrays.toString(row));
+        }
+    }
+
+    public static int[][] floydWarshall(int[][] graph) {
+        int n = graph.length;
+        int[][] dist = new int[n][n];
+
+        // Initialize the distance matrix with the input graph
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = graph[i][j];
+            }
+        }
+
+        // Update distances using Floyd-Warshall algorithm
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+
+        return dist;
+    }
+}
+
+
+
+
+
+
+// The problem can be represented as a graph where:
+
+// Each office is a node.
+// Each phone line is an edge with a weight representing the cost of connecting two offices.
+// The goal is to find the minimum total cost to connect all offices.
+// While the Floyd-Warshall algorithm is traditionally used to find the shortest paths between all pairs of nodes, it can also help to verify the minimum cost of connections by progressively improving paths between nodes.
+
+// Here, Floyd-Warshall helps by determining the shortest path costs between all office pairs, allowing us to check if direct connections or indirect paths are more cost-effective.
+
+// Floyd-Warshall Algorithm Steps:
+// Input: Represent the costs using a graph as an adjacency matrix dist, where:
+// dist[i][j] is the cost of connecting office i to office j.
+// If no direct connection exists, set dist[i][j] to infinity (INF).
+// Initialization:
+// Set dist[i][i] = 0 for all i (no cost to connect an office to itself).
+// Iterate:
+// For each intermediate node 
+// 𝑘
+// k:
+// Update the cost of connecting node 
+// 𝑖
+// i to node 
+// 𝑗
+// j through 
+// 𝑘
+// k:
+// dist
+// [
+// 𝑖
+// ]
+// [
+// 𝑗
+// ]
+// =
+// min
+// ⁡
+// (
+// dist
+// [
+// 𝑖
+// ]
+// [
+// 𝑗
+// ]
+// ,
+// dist
+// [
+// 𝑖
+// ]
+// [
+// 𝑘
+// ]
+// +
+// dist
+// [
+// 𝑘
+// ]
+// [
+// 𝑗
+// ]
+// )
+// dist[i][j]=min(dist[i][j],dist[i][k]+dist[k][j])
+// Output:
+// After all iterations, dist[i][j] contains the minimum cost to connect office 
+// 𝑖
+// i to office 
+// 𝑗
+// j.
+
+
+
+
+// ---------------------------------------------------------------
+
+
+
+
+// Explanation of the Code:
+// Graph Representation:
+// The graph matrix defines the costs between nodes.
+// INF represents no direct connection.
+// Initialization:
+// Copy the initial graph to the dist matrix.
+// Core Algorithm:
+// For each intermediate node k, update all pairs (i, j) to check if passing through k offers a cheaper path.
+// Output:
+// The dist matrix gives the minimum costs between every pair of offices.

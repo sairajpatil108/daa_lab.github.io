@@ -1,0 +1,202 @@
+
+import java.util.*;
+
+public class test {
+
+    public static int networkDelayTime(int[][] times, int n, int k) {
+        // Step 1: Build the graph using an adjacency list
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] time : times) {
+            graph.computeIfAbsent(time[0], x -> new ArrayList<>()).add(new int[]{time[1], time[2]});
+        }
+
+        // Step 2: Initialize the distance array
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k] = 0;
+
+        // Step 3: Use a priority queue for Dijkstra's algorithm
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0])); // [distance, node]
+        pq.offer(new int[]{0, k});
+
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int time = current[0];
+            int node = current[1];
+
+            // Skip if we already found a shorter path
+            if (time > dist[node]) {
+                continue;
+            }
+
+            // Explore neighbors
+            if (graph.containsKey(node)) {
+                for (int[] neighbor : graph.get(node)) {
+                    int nextNode = neighbor[0];
+                    int weight = neighbor[1];
+
+                    if (dist[node] + weight < dist[nextNode]) {
+                        dist[nextNode] = dist[node] + weight;
+                        pq.offer(new int[]{dist[nextNode], nextNode});
+                    }
+                }
+            }
+        }
+
+        // Step 4: Find the maximum time in the distance array
+        int maxTime = 0;
+        for (int i = 1; i <= n; i++) {
+            if (dist[i] == Integer.MAX_VALUE) {
+                return -1;
+            }
+            maxTime = Math.max(maxTime, dist[i]);
+        }
+
+        return maxTime;
+    }
+
+    public static void main(String[] args) {
+        // Example input
+        int[][] times = {
+            {2, 1, 1},
+            {2, 3, 1},
+            {3, 4, 1}
+        };
+        int n = 4; // Number of nodes
+        int k = 2; // Start node
+
+        int result = networkDelayTime(times, n, k);
+        System.out.println("Network Delay Time: " + result);
+    }
+}
+
+// Steps to Solve Using Dijkstra's Algorithm
+// Graph Representation:
+// Use an adjacency list to store the graph.
+// Each edge is represented as 
+// (
+// 𝑢
+// ,
+// 𝑣
+// ,
+// 𝑤
+// )
+// (u,v,w), where 
+// 𝑢
+// u is the source, 
+// 𝑣
+// v is the destination, and 
+// 𝑤
+// w is the weight (time to travel).
+// Priority Queue:
+// Use a priority queue (min-heap) to explore nodes with the smallest distance first.
+// Distance Array:
+// Maintain an array dist[] where dist[i] represents the shortest time to reach node 
+// 𝑖
+// i from 
+// 𝐾
+// K.
+// Initialize dist[K] = 0 and others to infinity.
+// Algorithm:
+// Start from 
+// 𝐾
+// K and push 
+// (
+// 0
+// ,
+// 𝐾
+// )
+// (0,K) (distance, node) into the priority queue.
+// For each node popped from the queue:
+// Update the distance of its neighbors if a shorter path is found.
+// Repeat until the queue is empty.
+// Check Reachability:
+// The result is the maximum value in the dist[] array.
+// If any node remains unreachable (distance = infinity), return -1.
+// ----------------------------------------------
+// Explanation of Code
+// Graph Representation:
+// Convert the input times[][] into an adjacency list:
+// java
+// Copy code
+// { 
+//   2 -> [(1, 1), (3, 1)],
+//   3 -> [(4, 1)]
+// }
+// Dijkstra’s Algorithm:
+// Start with the source node 
+// 𝐾
+// =
+// 2
+// K=2 and push it into the priority queue with distance 0.
+// Explore all neighbors:
+// (
+// 2
+// →
+// 1
+// ,
+// 1
+// )
+// (2→1,1): Update distance to 1.
+// (
+// 2
+// →
+// 3
+// ,
+// 1
+// )
+// (2→3,1): Update distance to 1.
+// Continue until all reachable nodes are processed.
+// Result:
+// The maximum distance in the dist[] array is the network delay time.
+// If any node is unreachable, return -1.
+// Example Input
+// text
+// Copy code
+// Number of Nodes: 4
+// Start Node (K): 2
+// Edges (times): [
+//   {2, 1, 1}, 
+//   {2, 3, 1}, 
+//   {3, 4, 1}
+// ]
+// Output:
+// css
+// Copy code
+// Network Delay Time: 2
+// Complexity Analysis
+// Time Complexity:
+// Building the graph: 
+// 𝑂
+// (
+// 𝑀
+// )
+// O(M) where 
+// 𝑀
+// M is the number of edges.
+// Dijkstra's algorithm: 
+// 𝑂
+// (
+// (
+// 𝑀
+// +
+// 𝑁
+// )
+// log
+// ⁡
+// 𝑁
+// )
+// O((M+N)logN), dominated by the priority queue operations.
+// Space Complexity:
+// Graph storage: 
+// 𝑂
+// (
+// 𝑀
+// )
+// O(M).
+// Distance array and priority queue: 
+// 𝑂
+// (
+// 𝑁
+// )
+// O(N).

@@ -1,0 +1,210 @@
+import java.util.Arrays;
+import java.util.Comparator;
+
+class Job {
+    int id, deadline, profit;
+
+    public Job(int id, int deadline, int profit) {
+        this.id = id;
+        this.deadline = deadline;
+        this.profit = profit;
+    }
+}
+
+public class test {
+
+    public static void main(String[] args) {
+        // Example input
+        Job[] jobs = {
+            new Job(1, 4, 20),
+            new Job(2, 1, 10),
+            new Job(3, 1, 40),
+            new Job(4, 1, 30)
+        };
+
+        int maxProfit = scheduleJobs(jobs);
+        System.out.println("Maximum Profit: " + maxProfit);
+    }
+
+    public static int scheduleJobs(Job[] jobs) {
+        // Step 1: Sort jobs by profit in descending order
+        Arrays.sort(jobs, Comparator.comparingInt(j -> -j.profit));
+
+        // Step 2: Find the maximum deadline to determine schedule size
+        int maxDeadline = Arrays.stream(jobs).mapToInt(j -> j.deadline).max().orElse(0);
+
+        // Step 3: Initialize schedule (slots)
+        boolean[] schedule = new boolean[maxDeadline];
+        int totalProfit = 0;
+
+        // Step 4: Place each job in the latest available slot before its deadline
+        for (Job job : jobs) {
+            // Start from the last possible slot
+            for (int j = Math.min(job.deadline - 1, maxDeadline - 1); j >= 0; j--) {
+                if (!schedule[j]) {
+                    schedule[j] = true; // Slot is taken
+                    totalProfit += job.profit; // Add profit
+                    break; // Move to the next job
+                }
+            }
+        }
+
+        return totalProfit;
+    }
+}
+
+
+
+
+
+
+
+// Steps of the Greedy Algorithm:
+// Sort Tasks by Profit:
+// Arrange tasks in descending order of profit since higher profit tasks should be prioritized.
+// Use a Schedule Array:
+// Maintain an array representing available time slots, where each slot can hold one task.
+// Place Each Task:
+// For each task (in descending order of profit):
+// Place it in the latest available time slot before or equal to its deadline.
+// Skip if Full:
+// If no slots are available, skip the task.
+// Example:
+// Given:
+
+// Tasks: 
+// 𝑇
+// 1
+// ,
+// 𝑇
+// 2
+// ,
+// 𝑇
+// 3
+// ,
+// 𝑇
+// 4
+// T1,T2,T3,T4
+// Deadlines: 
+// 𝑑
+// =
+// [
+// 4
+// ,
+// 1
+// ,
+// 1
+// ,
+// 1
+// ]
+// d=[4,1,1,1]
+// Profits: 
+// 𝑝
+// =
+// [
+// 20
+// ,
+// 10
+// ,
+// 40
+// ,
+// 30
+// ]
+// p=[20,10,40,30]
+// Step-by-Step:
+// Sort by Profit:
+
+// 𝑇
+// 3
+// (
+// 𝑝
+// =
+// 40
+// ,
+// 𝑑
+// =
+// 1
+// )
+// ,
+// 𝑇
+// 4
+// (
+// 𝑝
+// =
+// 30
+// ,
+// 𝑑
+// =
+// 1
+// )
+// ,
+// 𝑇
+// 1
+// (
+// 𝑝
+// =
+// 20
+// ,
+// 𝑑
+// =
+// 4
+// )
+// ,
+// 𝑇
+// 2
+// (
+// 𝑝
+// =
+// 10
+// ,
+// 𝑑
+// =
+// 1
+// )
+// T3(p=40,d=1),T4(p=30,d=1),T1(p=20,d=4),T2(p=10,d=1)
+// Create Schedule:
+
+// Schedule array: [ - , - , - , - ] (4 slots, initially empty)
+// Place Tasks:
+
+// 𝑇
+// 3
+// T3: Deadline = 1 → Slot 1. Schedule: [ T3 , - , - , - ]
+// 𝑇
+// 4
+// T4: Deadline = 1 → Slot 1 is full. Skip.
+// 𝑇
+// 1
+// T1: Deadline = 4 → Slot 4. Schedule: [ T3 , - , - , T1 ]
+// 𝑇
+// 2
+// T2: Deadline = 1 → Slot 1 is full. Skip.
+// Final Schedule:
+
+// [
+// 𝑇
+// 3
+// ,
+// −
+// ,
+// −
+// ,
+// 𝑇
+// 1
+// ]
+// [T3,−,−,T1]
+// Result:
+// Selected tasks: 
+// 𝑇
+// 3
+// ,
+// 𝑇
+// 1
+// T3,T1
+// Maximum profit: 
+// 40
+// +
+// 20
+// =
+// 60
+// 40+20=60

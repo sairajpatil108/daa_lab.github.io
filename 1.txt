@@ -1,0 +1,150 @@
+import java.math.BigInteger;
+
+public class test {
+
+    public static void main(String[] args) {
+        // Example: a 20-digit number
+        String largeNumber = "12345678901234567890";
+        BigInteger result = squareLargeNumber(new BigInteger(largeNumber));
+        System.out.println("Square of " + largeNumber + " is: " + result);
+    }
+
+    // Function to compute the square using divide and conquer
+    public static BigInteger squareLargeNumber(BigInteger num) {
+        // Base case: If the number has only one digit, return its square directly
+        if (num.compareTo(BigInteger.TEN) < 0) {
+            return num.multiply(num);
+        }
+
+        // Convert the number to a string to divide it
+        String numStr = num.toString();
+        int length = numStr.length();
+        int mid = length / 2;
+
+        // Split the number into two halves
+        BigInteger high = new BigInteger(numStr.substring(0, mid));
+        BigInteger low = new BigInteger(numStr.substring(mid));
+
+        // Calculate the square of each part recursively
+        BigInteger highSquare = squareLargeNumber(high);
+        BigInteger lowSquare = squareLargeNumber(low);
+        BigInteger crossProduct = high.multiply(low).multiply(BigInteger.TWO);
+
+        // Combine the results: (high * 10^n + low)^2 = high^2 * 10^(2n) + 2 * high * low * 10^n + low^2
+        int n = numStr.length() - mid; // Number of digits in low
+        BigInteger result = highSquare.multiply(BigInteger.TEN.pow(2 * n))
+                              .add(crossProduct.multiply(BigInteger.TEN.pow(n)))
+                              .add(lowSquare);
+
+        return result;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Explanation in Simple Words
+// Problem:
+
+// Compute the square of a large 20-digit number without relying entirely on libraries. Instead, use the divide and conquer strategy.
+// Divide and Conquer Approach:
+
+// Divide: Split the large number into two smaller parts, high (left half) and low (right half).
+// Conquer: Compute the square of the smaller parts recursively and the cross product of the two parts.
+// Combine: Use the mathematical formula to compute the result:
+// (
+// ℎ
+// 𝑖
+// 𝑔
+// ℎ
+// ×
+// 1
+// 0
+// 𝑛
+// +
+// 𝑙
+// 𝑜
+// 𝑤
+// )
+// 2
+// =
+// ℎ
+// 𝑖
+// 𝑔
+// ℎ
+// 2
+// ×
+// 1
+// 0
+// 2
+// 𝑛
+// +
+// 2
+// ×
+// ℎ
+// 𝑖
+// 𝑔
+// ℎ
+// ×
+// 𝑙
+// 𝑜
+// 𝑤
+// ×
+// 1
+// 0
+// 𝑛
+// +
+// 𝑙
+// 𝑜
+// 𝑤
+// 2
+// (high×10 
+// n
+//  +low) 
+// 2
+//  =high 
+// 2
+//  ×10 
+// 2n
+//  +2×high×low×10 
+// n
+//  +low 
+// 2
+ 
+// Here, 
+// 𝑛
+// n is the number of digits in the low part.
+// Step-by-Step Execution:
+
+// Example: Let's say the number is 12345678901234567890.
+// Split it into high = 1234567890 and low = 1234567890.
+// Recursively compute:
+// high^2 (square of 1234567890).
+// low^2 (square of 1234567890).
+// 2 * high * low (cross product).
+// Combine the results to get the final square.
+// Key Points:
+
+// The recursion breaks the number into smaller parts until it becomes a single digit, which is simple to square.
+// BigInteger is used to handle large numbers since Java's primitive types (like long) cannot hold 20-digit numbers.
+// Efficiency:
+
+// By breaking the problem into smaller pieces and reusing calculations, the divide and conquer strategy is more efficient than straightforward multiplication for extremely large numbers.

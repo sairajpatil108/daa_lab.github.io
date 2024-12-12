@@ -1,0 +1,123 @@
+
+public class test {
+
+    static final int[] rowMoves = {2, 1, -1, -2, -2, -1, 1, 2};
+    static final int[] colMoves = {1, 2, 2, 1, -1, -2, -2, -1};
+
+    public static void main(String[] args) {
+        int n = 8; // Chessboard size (N x N)
+        solveKnightsTour(n);
+    }
+
+    public static void solveKnightsTour(int n) {
+        int[][] board = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = -1; // Mark all squares as unvisited
+            }
+        }
+
+        // Start from the top-left corner
+        board[0][0] = 0; // First move
+        if (backtrack(0, 0, 1, board, n)) {
+            printBoard(board);
+        } else {
+            System.out.println("No solution exists for the Knight's Tour");
+        }
+    }
+
+    // Backtracking function
+    private static boolean backtrack(int x, int y, int moveCount, int[][] board, int n) {
+        if (moveCount == n * n) {
+            return true; // All squares are visited
+        }
+
+        // Try all possible knight moves
+        for (int i = 0; i < 8; i++) {
+            int nextX = x + rowMoves[i];
+            int nextY = y + colMoves[i];
+
+            if (isSafe(nextX, nextY, board, n)) {
+                board[nextX][nextY] = moveCount; // Mark the square
+                if (backtrack(nextX, nextY, moveCount + 1, board, n)) {
+                    return true;
+                }
+                board[nextX][nextY] = -1; // Backtrack: unmark the square
+            }
+        }
+        return false;
+    }
+
+    // Check if the move is within bounds and unvisited
+    private static boolean isSafe(int x, int y, int[][] board, int n) {
+        return x >= 0 && x < n && y >= 0 && y < n && board[x][y] == -1;
+    }
+
+    // Print the solution board
+    private static void printBoard(int[][] board) {
+        for (int[] row : board) {
+            for (int cell : row) {
+                System.out.printf("%2d ", cell);
+            }
+            System.out.println();
+        }
+    }
+}
+
+// The Knight's Tour problem is a classic backtracking problem where the knight must visit every square on a chessboard exactly once. If this is possible, we also number the squares in the order they are visited.
+// Approach: Backtracking
+// The solution involves exploring all possible moves for the knight using a recursive function:
+// Base Case:
+// If all squares are visited (count of visited squares equals 
+// 𝑁
+// ×
+// 𝑁
+// N×N), the tour is complete.
+// Recursive Case:
+// From the current square, attempt all valid knight moves.
+// If moving to a square is safe (i.e., within bounds and not visited), move to that square, mark it as visited, and recursively attempt the next move.
+// Backtracking:
+// If no move leads to a solution, backtrack by unmarking the current square and trying other moves.
+// Mathematics of the Moves
+// The knight moves in an L-shape. From a position 
+// (
+// 𝑥
+// ,
+// 𝑦
+// )
+// (x,y), its possible moves are:
+// (
+// 𝑥
+// ±
+// 2
+// ,
+// 𝑦
+// ±
+// 1
+// )
+// ,
+// (
+// 𝑥
+// ±
+// 1
+// ,
+// 𝑦
+// ±
+// 2
+// )
+// (x±2,y±1),(x±1,y±2)
+// Explanation of Code
+// Initialization:
+// An 
+// 𝑁
+// ×
+// 𝑁
+// N×N chessboard is initialized with -1, marking all squares as unvisited.
+// Recursive Backtracking:
+// Start from the first square, explore all 8 possible moves, and recursively attempt to complete the tour.
+// If all moves are unsuccessful, backtrack by unmarking the square.
+// Validation:
+// Ensure the next move is within the chessboard and to an unvisited square.
+// Output:
+
+// Print the chessboard showing the order in which squares are visited.
